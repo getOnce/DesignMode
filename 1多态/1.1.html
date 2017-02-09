@@ -1,0 +1,58 @@
+﻿<style>
+	#box{
+		border: solid 1px red;
+		height: 100px;
+	}
+</style>
+<div id='box'></div>
+<script type="text/javascript">
+	var duck = {
+		duckSinging: function(){
+			console.log( '嘎嘎嘎' );
+		}
+	};
+
+	var chicken = {
+		duckSinging: function(){
+			console.log( '嘎嘎嘎' );
+		}
+	};
+
+	var choir = []; // 合唱团
+	var joinChoir = function( animal ){
+		if ( animal && typeof animal.duckSinging === 'function' ){
+			choir.push( animal );
+			console.log( '恭喜加入合唱团' );
+			console.log( '合唱团已有成员数量:' + choir.length );
+		}
+	};
+
+	joinChoir( duck ); // 恭喜加入合唱团
+	joinChoir( chicken ); // 恭喜加入合唱团
+
+	Function.prototype.after = function(fn){
+		var me = this;
+		return function(){
+			var args = arguments;
+			var result = me.apply(this, args);
+			fn.apply(this, args);
+			console.log(this);
+			return result;
+		}
+	}
+	var fn = {
+		sayHi: function(){
+			console.log('hello world!');
+		}
+	}
+
+
+	var $box = document.querySelector('#box');
+	$box.addEventListener('click', fn['sayHi'], false);
+
+	fn.sayHi = fn.sayHi.after(function(){ console.log('aop'); })
+	
+	console.log(fn.sayHi);
+
+
+</script>
