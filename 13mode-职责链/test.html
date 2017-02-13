@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+    var Chain = function(args){
+        this.fn = null;
+        this.temp = [];
+        this.args = args || null;
+        if(arguments.length > 0){
+            for(var key in arguments){
+                this[key] = arguments[key];
+            }
+        }
+    }
+    Chain.prototype.start = function(){
+        var self = this;
+        if(self.temp.length){
+            self.fn = self.async(self.temp.shift()['execute']);
+        }
+    }
+    Chain.prototype.async = function(execute){
+        var self = this;
+        return new Promise((resolve, reject) => {
+            execute.call(self, 
+                function(data){
+                    self.args = data;
+                    resolve(data);
+                    if(self.temp.length){
+                        self.proxyThen(self.temp.shift()['execute']);    
+                    }
+                }, 
+                reject, self.args);
+        });
+    }
+    Chain.prototype.proxyThen = function(execute){
+        var self = this;
+        self.fn.then(function(data){
+            return self.async.call(self, execute); 
+        });
+    }
+    Chain.prototype.clear = function(){
+        this.temp = [];
+    }
+    Chain.prototype.add = function(fn){
+        this.temp.push({
+            execute: fn
+        });
+        return this;
+    }
+    Chain.prototype.catch = function(fn){
+        var self = this;
+        if(self.fn && self.fn.catch){
+            self.fn.catch(function(data){ 
+                self.args = data; 
+                fn.call(self); 
+            });
+        }
+        return self;
+    }
+        
+var c = new Chain()
+    
+    c
+        .add(function(resolve, reject, data){
+            var self = this;
+            setTimeout(function(){
+                console.log('first');
+                resolve('a');
+            }, 3000)
+        })
+        .add(function(resolve, reject, data){
+
+            setTimeout(function(){
+                var self = c;
+                console.log(data);
+                resolve('b')
+            }, 3000)
+        })
+        .add(function(resolve, reject, data){
+
+            setTimeout(function(){
+                var self = c;
+                console.log(data);
+                resolve('c')
+                //reject('over');
+            }, 3000)
+        })
+        .add(function(resolve, reject, data){
+
+            setTimeout(function(){
+                var self = c;
+                console.log(data);
+                reject('d');
+                //reject('over');
+            }, 3000)
+        })
+        .add(function(resolve, reject, data){
+
+            setTimeout(function(){
+                var self = c;
+                console.log(data);
+                resolve('e')
+                //reject('over');
+            }, 3000)
+        })
+        .add(function(resolve, reject, data){
+            setTimeout(function(){
+                var self = c;
+                console.log(data);
+                resolve('f')
+                //reject('over');
+            }, 3000)
+        })
+        .catch((err) => {
+            console.log(c.args);
+        });
+    c.start();    
+    
+
+
+
+    </script>
+</body>
+</html>

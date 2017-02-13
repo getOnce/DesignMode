@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+	ul, li{
+		list-style-type: none;
+	}
+	.box:after{
+		clear: both;
+		content: '';
+		height: 1px;
+		overflow: hidden;
+		width: 100%;
+		display: block;
+	}
+	.box li{
+		float: left;
+		width: 50px;
+		height: 50px;
+		margin-right: 10px;
+		border: solid 1px red;
+	}
+	.box li.hover{
+		background-color: #ccc;
+	}
+	</style>
+</head>
+<body>
+	<ul class="box">
+		<li class='f'>
+			<a>1</a>
+		</li>
+		<li class="s">
+			2
+		</li>
+		<li class="t">
+			3
+		</li>
+	</ul>
+<script>
+	(function(){
+		function $(){
+			return document.querySelector('.box');
+		}
+		var Item = function(dom, content){
+			this.dom = dom;
+			this.content = content;
+		}
+		var strategy = {
+			f: function(){
+				return new Item( "<li class='f'><a>1</a></li>", 1 );
+			},
+			s: function(){
+				return new Item( "<li class='s'>2</li>", 2 );
+			},
+			t: function(){
+				return new Item( "<li class='t'>3</li>", 3 );
+			}
+		}
+		var events = {
+			f: function(){
+				console.log('click class f');
+			},
+			s: function(){
+				console.log('click class s');
+			},
+			t: function(){
+				console.log('click class t');
+			}
+		}
+		var Tab = function(){
+			this.$el = null;
+			this.items = null;
+			this.strategies = [];
+			this.events = null;
+			this.strategy = null;
+		}
+		Tab.prototype = {
+			init: function($el, items, strategy, events){
+				this.$el = $el;
+				this.items = items;
+				this.events = events;
+				this.strategy = strategy;
+				this.replace(this.create());
+				this.bindEvent();
+			},
+			create: function(){
+				var str = '',
+					me = this;
+				this.items.forEach(function(item, index, array){
+					var stgy = me.strategy[item]();
+					me.strategies.push(stgy)
+					str += stgy.dom;
+					
+				});
+				return str;
+			},
+			append: function(str){
+				this.$el.innerHTML = this.$el.innerHTML + str;
+			},
+			replace: function(str){
+				this.$el.innerHTML = str;
+			},
+			prepend: function(str){
+				this.$el.innerHTML = str + this.$el.innerHTML;
+			},
+			proxyEvent: function(target){
+				
+				this.events[target.className] && this.events[target.className]();
+			},
+			bindEvent: function(){
+				var me = this;
+				this.$el.addEventListener('click',
+					function(e){
+					 	var target = e.target;
+					 	me.proxyEvent(target);
+					},
+					false)
+			}
+		}
+		var tab = new Tab();
+		tab.init($('.box'), ['f', 's', 'f', 't'], strategy, events);
+	})()
+	
+</script>
+	
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -343,52 +343,5 @@
 
 		};
 	</script>
-
-	<script>
-	/**
-	*1月份 - 3月份 8折
-	*4月份 - 5月份 2折
-	*6月份 8折
-	*7月份、9月份、10月份 10折
-	*8月份 5折
-	*11月份 2折
-	*12月份 3折
-	*/
-
-	/**
-	*策略
-	*/
-	var strategy = {
-		'1': function(price){
-			return price * 0.8;
-		},
-		'4': function(price){
-			return price * 0.2;
-		}
-	}
-
-	/**
-	*衣服
-	*/
-	var Clothes = function(){
-		this.originPrice = null;
-		this.price = null;
-		this.strategy = strategy[ new Date().getMonth() ];
-	}
-	Clothes.prototype.init = function(price){
-		this.originPrice = price;
-	}
-	Clothes.prototype.getCurrPrice = function(){
-		this.price = this.strategy(this.originPrice);
-	}
-	</script>
-
-
-
-
-
-
-
-
 </body>
 </html>

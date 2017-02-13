@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+	.box{
+		height: 100px;
+		border: solid 1px red;
+	}
+	</style>
+</head>
+<body>
+	<div class="box" id="js-box">
+		关闭
+	</div>
+	<div>
+		<input type="button" value="上传" id="js-upload"/>
+		<input type="button" value="清空" id="js-clear"/>
+	</div>
+	<script>
+	//上传中...
+	//扫描中...
+	//正常状态...
+	//清空状态...
+	var $ = function(selector){
+		return document.querySelector(selector)
+	}
+
+	var ScanState = function(receivor){
+		this.receivor = receivor;
+	}
+	ScanState.prototype = {
+		clickHandler1: function(){
+			console.log('扫描中，不能操作');
+			//this.receivor.currState = this.normalState;
+		},
+		clickHandler2: function(){
+			console.log('扫描中，不能操作');
+		}
+	}
+
+	var UploadState = function(receivor){
+		this.receivor = receivor;
+	}
+	UploadState.prototype = {
+		clickHandler1: function(){
+			console.log('上传中，不能操作');
+			//this.receivor.currState = this.normalState;
+		},
+		clickHandler2: function(){
+			console.log('进入清空状态');
+			this.receivor.clear();
+			this.receivor.currState = this.receivor.clearState;
+		}
+	}
+
+	var NormalState = function(receivor){
+		this.receivor = receivor;
+	}
+	NormalState.prototype = {
+		clickHandler1: function(){
+			console.log('进入上传状态');
+			this.receivor.upload();
+			this.receivor.currState = this.uploadState;
+		},
+		clickHandler2: function(){
+			console.log('进入清空状态');
+			this.receivor.clear();
+			this.receivor.currState = this.receivor.clearState;
+		}
+	}
+
+	var ClearState = function(receivor){
+		this.receivor = receivor;
+	}
+	ClearState.prototype = {
+		clickHandler1: function(){
+			console.log('进入上传状态');
+			this.receivor.upload();
+			this.receivor.currState = this.uploadState;
+		},
+		clickHandler2: function(){
+			console.log('进入扫描状态');
+			this.receivor.scan();
+			this.receivor.currState = this.receivor.scanState;
+		}
+	}
+
+	var Upload = function($el){
+		this.scanState = new ScanState(this);
+		this.uploadState = new UploadState(this);
+		this.normalState = new NormalState(this);
+		this.clearState = new ClearState(this);
+		this.currState = this.uploadState;
+		this.$el = $el;
+	}
+	Upload.prototype = {
+		clickHandler1: function(){
+			console.log(this);
+			this.currState.clickHandler1();
+		},
+		clickHandler2: function(){
+			
+			this.currState.clickHandler2();
+		},
+		scan: function (argument) {
+			// body...
+			this.$el.innerText = '扫描中';
+		},
+		upload: function (argument) {
+			// body...
+			this.$el.innerText = '上传中';
+		},
+		clear: function (argument) {
+			// body...
+			this.$el.innerText = '清空';
+		}
+	}
+
+	var u = new Upload($('#js-box'));
+
+	$('#js-upload').onclick = function(){
+		u.clickHandler1()
+	};
+	$('#js-clear').onclick = function(){
+		u.clickHandler2()
+	};
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*电灯*/
+		var OffState = function(receivor){
+			this.receivor = receivor;
+		}
+		OffState.prototype.stateChange = function(){
+			console.log('关闭');
+			this.receivor.$el.innerText = '关闭';
+			this.receivor.currState = this.receivor.weakLightState;
+		}
+
+		var WeakLightState = function(receivor){
+			this.receivor = receivor;
+		}
+		WeakLightState.prototype.stateChange = function(){
+			console.log('弱光');
+			this.receivor.$el.innerText = '弱光';
+			this.receivor.currState = this.receivor.normalLight;
+		}
+
+		var NormalLight = function(receivor){
+			this.receivor = receivor;
+		}
+		NormalLight.prototype.stateChange = function(){
+			console.log('正常光');
+			this.receivor.$el.innerText = '正常光';
+			this.receivor.currState = this.receivor.strongLight;
+		}
+
+		var StrongLight = function(receivor){
+			this.receivor = receivor;
+		}
+		StrongLight.prototype.stateChange = function(){
+			console.log('强光');
+			this.receivor.$el.innerText = '强光';
+			this.receivor.currState = this.receivor.offState;
+		}
+
+		var $box = document.querySelector('#js-box')
+		
+
+		function Light($el){
+			this.offState = new OffState(this);
+			this.weakLightState = new WeakLightState(this);
+			this.normalLight = new NormalLight(this);
+			this.strongLight = new StrongLight(this);
+			this.$el = $el;
+			this.currState = this.offState;
+		}
+		Light.prototype = {
+			setState: function(){
+				this.currState.stateChange();
+			}
+		}
+		
+		// var light = new Light($box);
+
+		// $box.addEventListener('click', 
+		// 	function(){
+		// 		light.setState();
+		// 	}, false);
+
+
+/* 上传 */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	</script>
+</body>
+</html>
